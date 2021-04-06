@@ -1,7 +1,7 @@
 <template>
   <div id="nav">
     <div class="navbar">
-      <router-link to="/">Ma météo</router-link>
+      <router-link to="/">W-Weather</router-link>
       <router-link to="/about">About</router-link>
     </div>
   </div>
