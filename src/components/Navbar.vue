@@ -39,4 +39,10 @@ export default {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+@media (max-width: 495px) {
+  #nav a {
+    font-size: 18px;
+  }
+}
 </style>

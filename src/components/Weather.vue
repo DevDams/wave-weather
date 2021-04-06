@@ -2,7 +2,7 @@
   <div class="container">
     <div class="content">
       <div class="search_box" v-if="always">
-        <h3>Rechercher une ville : </h3>
+        <h3>Rechercher une ville </h3>
         <input type="text" name="query" autocomplete="off" v-model="query" @keypress="fetchWeather">
       </div>
       <!-- ===== WEATHER IN THE CURRENT CITY ===== -->
@@ -332,7 +332,22 @@ export default {
 
 @media (max-width: 1024px) {
   .content {
-    height: 100vh;
+    height: 100%;
+    margin-top: 150px;
+    margin-bottom: 100px;
+  }
+
+  .search_box {
+    width: 95%;
+    margin: -100px auto 0 auto;
+  }
+
+  .search_box h3 {
+    font-size: 23px;
+  }
+
+  .search_box input {
+    height: 50px;
   }
   
   .weather {
@@ -342,11 +357,84 @@ export default {
 
   .weather .city_info {
     width: 100%;
+    border-right: none;
   }
 
   .weather .city_weather {
     width: 100%;
-    margin-top: 40px;
+    margin-top: 70px;
+  }
+}
+
+@media (max-width: 621px) {
+  .search_box {
+    width: 90%;
+    margin: -100px auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .search_box h3 {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .search_box input {
+    width: 290px;
+    height: 50px;
+  }
+
+  .city_weather .weather_info span {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 585px) {
+  .city_weather .city_weather_temp .temp {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .weather .city_info .city_sun p {
+    font-size: 18px;
+  }
+
+  .city_weather .weather_info .precipitation {
+    width: 30%;
+  }
+}
+
+@media (max-width: 420px) {
+  .city_weather .weather_info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .city_weather .weather_info span {
+    font-size: 26px;
+  }
+
+  .city_weather .weather_info .wind {
+    margin-bottom: 35px;
+    width: 100%;
+  }
+
+  .city_weather .weather_info .humidity {
+    margin-bottom: 35px;
+    width: 100%;
+  }
+
+  .city_weather .weather_info .precipitation {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .weather .city_info .city_name h1 {
+    font-size: 55px;
   }
 }
 </style>

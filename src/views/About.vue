@@ -26,11 +26,32 @@ h1 {
 }
 
 p {
-  width: 900px;
+  width: 80%;
   margin: auto;
   margin-top: 50px;
   font-size: 24px;
   line-height: 35px;
   color: black;
+}
+
+@media (max-width: 621px) {
+  h1 {
+    font-size: 40px;
+  }
+
+  p {
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 465px) {
+  h1 {
+    font-size: 30px;
+  }
+  
+  p {
+    font-size: 18px;
+    line-height: 28px;
+  }
 }
 </style>
