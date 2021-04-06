@@ -1,11 +1,12 @@
 <template>
   <div class="container">
     <div class="content">
-      <div class="search_box">
+      <div class="search_box" v-if="always">
         <h3>Rechercher une ville :</h3>
         <input type="text" name="query" v-model="query" @keypress="fetchWeather">
       </div>
-      <div class="weather" v-if="typeof weather.main != 'undefined'">
+      <!-- ===== WEATHER IN THE CURRENT CITY ===== -->
+      <div class="weather" v-if="seen">
         <div class="city_info">
           <div class="city_name">
             <h1>{{ weather.name }}, {{ weather.sys.country }}</h1>
@@ -16,28 +17,66 @@
             <p><span>Latitude :</span> {{ weather.coord.lat }}</p>
           </div>
           <div class="city_sun">
-            <p class="sunrise"><span>Levé du soleil :</span> 6h01</p>
-            <p class="sunset"><span>Couché du soleil :</span> 17h45</p>
+            <p class="sunrise"><span>Levé du soleil :</span> {{ timeConvert(weather.sys.sunrise) }} </p>
+            <p class="sunset"><span>Couché du soleil :</span> {{ timeConvert(weather.sys.sunset) }} </p>
           </div>
         </div>
         <div class="city_weather">
           <div class="city_weather_temp">
             <div class="temp">
-              <p class="min">Min <br> 9°C</p>
-              <p class="temp">12°C</p>
-              <p class="max">Max <br> 15°C</p>
+              <p class="min">Min <br>{{ Math.round(weather.main.temp_min) }}°C</p>
+            <p class="temp">{{ Math.round(weather.main.temp) }}°C</p>
+              <p class="max">Max <br> {{ Math.round(weather.main.temp_max) }}°C</p>
             </div>
             <p class="mom">{{ weather.weather[0].description }}</p>
           </div>
           <div class="weather_info">
             <div class="wind">
-              <p><span>Vitesse du vent</span> <br> 33km/h</p>
+              <p><span>Vitesse du vent</span> <br> {{ weather.wind.speed }} m/s</p>
             </div>
             <div class="humidity">
-              <p><span>Humidité</span> <br> 10%</p>
+              <p><span>Humidité</span> <br> {{ weather.main.humidity }}%</p>
             </div>
             <div class="precipitation">
-              <p><span>Précipitation</span> <br> 50ml</p>
+              <p><span>Visibilité</span> <br> {{ weather.visibility / 1000 }} km</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ===== WEATHER IN CITY USER SEARCH ===== -->
+      <div class="weather" v-if="seen2">
+        <div class="city_info">
+          <div class="city_name">
+            <h1>{{ weather.name }}, {{ weather.sys.country }}</h1>
+            <p>{{ dateBuilder() }}</p>
+          </div>
+          <div class="city_coor">
+            <p><span>Longitude :</span> {{ weather.coord.lon }} </p>
+            <p><span>Latitude :</span> {{ weather.coord.lat }}</p>
+          </div>
+          <div class="city_sun">
+            <p class="sunrise"><span>Levé du soleil :</span> {{ timeConvert(weather.sys.sunrise) }} </p>
+            <p class="sunset"><span>Couché du soleil :</span> {{ timeConvert(weather.sys.sunset) }} </p>
+          </div>
+        </div>
+        <div class="city_weather">
+          <div class="city_weather_temp">
+            <div class="temp">
+              <p class="min">Min <br>{{ Math.round(weather.main.temp_min) }}°C</p>
+            <p class="temp">{{ Math.round(weather.main.temp) }}°C</p>
+              <p class="max">Max <br> {{ Math.round(weather.main.temp_max) }}°C</p>
+            </div>
+            <p class="mom">{{ weather.weather[0].description }}</p>
+          </div>
+          <div class="weather_info">
+            <div class="wind">
+              <p><span>Vitesse du vent</span> <br> {{ weather.wind.speed }} m/s</p>
+            </div>
+            <div class="humidity">
+              <p><span>Humidité</span> <br> {{ weather.main.humidity }}%</p>
+            </div>
+            <div class="precipitation">
+              <p><span>Visibilité</span> <br> {{ weather.visibility / 1000 }} km</p>
             </div>
           </div>
         </div>
@@ -50,10 +89,30 @@
 export default {
   data () {
     return {
+      always: true,
+      seen2: false,
+      seen: false,
       api_key: '4904538d41bfc39b8c10759f5776286c',
       base_url: 'https://api.openweathermap.org/data/2.5/',
       query: '',
       weather: {}
+    }
+  },
+  mounted () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=fr&appid=4904538d41bfc39b8c10759f5776286c`)
+          .then(res => {
+            return res.json()
+          })
+          .then((results) => {
+            this.weather = results
+            console.log("weather ", this.weather)
+            this.seen = true
+          })
+    })
+    } else {
+      console.log("not geolocation")
     }
   },
   methods: {
@@ -68,7 +127,15 @@ export default {
     },
     setResults (results) {
       this.weather = results
-      console.log(this.weather.weather)
+      console.log("weather ", this.weather)
+      this.seen = false
+      this.seen2 = true
+    },
+    timeConvert (unix) {
+      let a = new Date(unix * 1000)
+      let hours = a.getHours()
+      let minutes = a.getMinutes()
+      return `${hours}h${minutes}`
     },
     dateBuilder () {
       let d = new Date()
