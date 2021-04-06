@@ -2,7 +2,7 @@
   <div class="container">
     <div class="content">
       <div class="search_box" v-if="always">
-        <h3>Rechercher une ville :</h3>
+        <h3>Rechercher une ville : </h3>
         <input type="text" name="query" autocomplete="off" v-model="query" @keypress="fetchWeather">
       </div>
       <!-- ===== WEATHER IN THE CURRENT CITY ===== -->
@@ -24,9 +24,9 @@
         <div class="city_weather">
           <div class="city_weather_temp">
             <div class="temp">
-              <p class="min">Min <br>{{ Math.round(weather.main.temp_min) }}°C</p>
-            <p class="temp">{{ Math.round(weather.main.temp) }}°C</p>
-              <p class="max">Max <br> {{ Math.round(weather.main.temp_max) }}°C</p>
+              <p class="min"><span>Min</span> <br>{{ Math.round(weather.main.temp_min) }}°C</p>
+            <p class="main_temp">{{ Math.round(weather.main.temp) }}°C</p>
+              <p class="max"><span>Max</span> <br> {{ Math.round(weather.main.temp_max) }}°C</p>
             </div>
             <p class="mom">{{ weather.weather[0].description }}</p>
           </div>
@@ -161,8 +161,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px solid black;
-  border-radius: 20px;
 }
 
 .search_box {
@@ -320,5 +318,35 @@ export default {
 
 .city_weather .weather_info .precipitation {
   width: 33%;
+}
+
+@media (max-width: 1224px) {
+  .weather .city_info {
+    width: 45%;
+  }
+
+  .weather .city_weather {
+    width: 55%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .content {
+    height: 100vh;
+  }
+  
+  .weather {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .weather .city_info {
+    width: 100%;
+  }
+
+  .weather .city_weather {
+    width: 100%;
+    margin-top: 40px;
+  }
 }
 </style>

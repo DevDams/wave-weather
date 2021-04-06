@@ -16,11 +16,11 @@ export default {
 <style scoped>
 #nav {
   background-color: #242424;
-  height: 70px;
+  height: 80px;
 }
 
 .navbar {
-  width: 85%;
+  width: 80%;
   height: 100%;
   margin: auto;
   display: flex;
@@ -33,6 +33,7 @@ export default {
   color: #f2f2f2;
   text-decoration: none;
   text-transform: uppercase;
+  font-size: 24px;
 }
 
 #nav a.router-link-exact-active {
