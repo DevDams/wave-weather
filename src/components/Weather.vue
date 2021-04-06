@@ -3,13 +3,13 @@
     <div class="content">
       <div class="search_box" v-if="always">
         <h3>Rechercher une ville :</h3>
-        <input type="text" name="query" v-model="query" @keypress="fetchWeather">
+        <input type="text" name="query" autocomplete="off" v-model="query" @keypress="fetchWeather">
       </div>
       <!-- ===== WEATHER IN THE CURRENT CITY ===== -->
       <div class="weather" v-if="seen">
         <div class="city_info">
           <div class="city_name">
-            <h1>{{ weather.name }}, {{ weather.sys.country }}</h1>
+            <h1>{{ weather.name }}, <span>{{ weather.sys.country }}</span></h1>
             <p>{{ dateBuilder() }}</p>
           </div>
           <div class="city_coor">
@@ -47,7 +47,7 @@
       <div class="weather" v-if="seen2">
         <div class="city_info">
           <div class="city_name">
-            <h1>{{ weather.name }}, {{ weather.sys.country }}</h1>
+            <h1>{{ weather.name }}, <span>{{ weather.sys.country }}</span></h1>
             <p>{{ dateBuilder() }}</p>
           </div>
           <div class="city_coor">
@@ -62,9 +62,9 @@
         <div class="city_weather">
           <div class="city_weather_temp">
             <div class="temp">
-              <p class="min">Min <br>{{ Math.round(weather.main.temp_min) }}°C</p>
-            <p class="temp">{{ Math.round(weather.main.temp) }}°C</p>
-              <p class="max">Max <br> {{ Math.round(weather.main.temp_max) }}°C</p>
+              <p class="min"><span>Min</span> <br>{{ Math.round(weather.main.temp_min) }}°C</p>
+              <p class="main_temp">{{ Math.round(weather.main.temp) }}°C</p>
+              <p class="max"><span>Max</span> <br> {{ Math.round(weather.main.temp_max) }}°C</p>
             </div>
             <p class="mom">{{ weather.weather[0].description }}</p>
           </div>
@@ -101,13 +101,12 @@ export default {
   mounted () {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=fr&appid=4904538d41bfc39b8c10759f5776286c`)
+        fetch(`${this.base_url}weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=fr&appid=${this.api_key}`)
           .then(res => {
             return res.json()
           })
           .then((results) => {
             this.weather = results
-            console.log("weather ", this.weather)
             this.seen = true
           })
     })
@@ -127,7 +126,6 @@ export default {
     },
     setResults (results) {
       this.weather = results
-      console.log("weather ", this.weather)
       this.seen = false
       this.seen2 = true
     },
@@ -158,27 +156,44 @@ export default {
 </script>
 
 <style>
+.content {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid black;
+  border-radius: 20px;
+}
+
 .search_box {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
+  margin-top: -100px;
 }
 
 .search_box h3 {
+  font-size: 33px;
+  font-weight: bold;
   margin-right: 20px;
+  color: #19524D;
   text-transform: uppercase;
 }
 
 .search_box input {
-  width: 270px;
-  height: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  width: 320px;
+  height: 60px;
   border: 1px solid black;
   border-radius: 8px;
   padding: 0 10px;
+  box-shadow: 0 5px 20px -10px rgba(0, 0, 0, 0.247);
 }
 
 .search_box input:focus {
+  box-shadow: 0px 5px 20px -10px rgba(0, 0, 0, 0.404);
   border: 1px solid black;
   outline: none;
 }
@@ -199,9 +214,15 @@ export default {
 }
 
 .weather .city_info .city_name h1 {
-  font-size: 50px;
+  font-size: 65px;
+  color: black;
+  font-weight: 900;
   margin-bottom: 15px;
   text-transform: capitalize;
+}
+
+.weather .city_info .city_name h1 span {
+  color: #3D8E85;
 }
 
 .weather .city_info .city_coor {
@@ -223,7 +244,12 @@ export default {
   margin-bottom: 15px;
 }
 
+.weather .city_info .city_sun p {
+  font-size: 21px;
+}
+
 .weather .city_info .city_sun span {
+  color: #3B4856;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -237,11 +263,29 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  font-size: 65px;
+  margin-bottom: 10px;
 }
 
 .city_weather .city_weather_temp .temp .max, .min {
-  font-size: 20px;
+  font-size: 21px;
+}
+
+.city_weather .city_weather_temp .temp .max span, .min span {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.city_weather .city_weather_temp .temp .max span {
+  color: #FF7A5E;
+}
+
+.city_weather .city_weather_temp .temp .min span {
+  color: #2DB0FE;
+}
+
+.city_weather .city_weather_temp .temp .main_temp {
+  font-size: 80px;
+  font-weight: 600;
 }
 
 .city_weather .city_weather_temp .mom {
@@ -252,13 +296,16 @@ export default {
 .city_weather .weather_info {
   width: 100%;
   margin: auto;
-  margin-top: 60px;
+  margin-top: 80px;
   display: flex;
   justify-content: space-around;
 }
 
 .city_weather .weather_info span {
-  font-size: 21px;
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #3B4856;
+  font-size: 24px;
 }
 
 .city_weather .weather_info .wind {
