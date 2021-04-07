@@ -16,7 +16,7 @@ export default {
 <style scoped>
 #nav {
   background-color: #242424;
-  height: 80px;
+  height: 70px;
 }
 
 .navbar {
@@ -37,7 +37,7 @@ export default {
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #f14666;
 }
 
 @media (max-width: 495px) {
