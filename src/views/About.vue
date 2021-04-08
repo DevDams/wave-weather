@@ -20,13 +20,15 @@ body {
 
 .about {
   text-align: center !important;
+  margin-bottom: 100px;
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 60px;
+  font-family: 'Bebas Neue', cursive;
   text-transform: uppercase;
   margin-top: 80px;
-  color: #19524D;
+  color: #4B856C;
 }
 
 p {
@@ -40,7 +42,7 @@ p {
 
 @media (max-width: 621px) {
   h1 {
-    font-size: 40px;
+    font-size: 55px;
   }
 
   p {
@@ -50,7 +52,7 @@ p {
 
 @media (max-width: 465px) {
   h1 {
-    font-size: 30px;
+    font-size: 45px;
   }
   
   p {

@@ -2,15 +2,23 @@
   <div class="container">
     <!-- SEARCH BOX -->
     <div class="search_box">
-      <input type="text" placeholder="🔍 Rechercher..." autocomplete="off">
+      <input type="text" placeholder="🔍 Rechercher..." autocomplete="off" v-model="query" @keyup.enter="fetchWeather">
+    </div>
+    <!-- LOADER -->
+    <div class="loader" v-if="load">
+      <img src="@/assets/svg-loaders/tail-spin.svg" alt="data loader">
+    </div>
+    <!-- ERROR FETCH DATA -->
+    <div class="error" v-if="found">
+      <h1>Vérifier le nom de la ville et rééssayez svp !</h1>
     </div>
     <!-- CURRENT LOCATION WEATHER INFO -->
-    <div class="weather">
+    <div class="weather" v-if="seen">
       <div class="date">
-        <span>Mercredi 07 Avril 2021 _</span>
+        <span>{{ dateBuilder() }} _</span>
       </div>
       <div class="city_name">
-        <h1>Préfecture de Tokyo, <span>JP</span></h1>
+        <h1>{{ weather.name }}, <span>{{ weather.sys.country }}</span></h1>
       </div>
       <!-- Sunset Sunrise -->
       <div class="sunset_rise">
@@ -30,7 +38,7 @@
               </g>
             </g>
           </svg>
-          6h32
+          {{ timeConvert(weather.sys.sunrise) }}
         </p>
         <p>
           <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -47,7 +55,7 @@
               </g>
             </g>
           </svg>
-          17h09
+          {{ timeConvert(weather.sys.sunset) }}
         </p>
       </div>
       <!-- Coordonées -->
@@ -75,8 +83,8 @@
             </svg>
           </h3>
           <ul>
-            <li class="latitude">Latitude : 35.6895</li>
-            <li class="longitude">Longitude : 139.6917</li>
+            <li class="latitude">Latitude : {{ weather.coord.lat }}</li>
+            <li class="longitude">Longitude : {{ weather.coord.lon }}</li>
           </ul>
         </div>
       </div>
@@ -95,8 +103,8 @@
         <!-- weather info -->
         <div class="weather_content">
           <div class="temp">
-            <h1>6°<span>c</span></h1>
-            <p>Partiellement nuageux</p>
+            <h1>{{ Math.round(weather.main.temp) }}°<span>c</span></h1>
+            <p>{{ weather.weather[0].description }}</p>
           </div>
           <div class="info">
             <ul>
@@ -126,7 +134,7 @@
                   </g>
                 </g>
                 </svg>
-                6 m/s
+                {{ weather.wind.speed }} m/s
               </li>
               <li>
                 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -164,7 +172,7 @@
                   </g>
                 </g>
                 </svg>
-                15hPa
+                {{ weather.main.pressure }} hPa
               </li>
               <li>
                 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -186,7 +194,197 @@
                   </g>
                 </g>
                 </svg>
-                78%
+                {{ weather.main.humidity }}%
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SEARCH LOCATION WEATHER -->
+    <div class="weather" v-if="seen2">
+      <div class="date">
+        <span>{{ dateBuilder() }} _</span>
+      </div>
+      <div class="city_name">
+        <h1>{{ weather.name }}, <span>{{ weather.sys.country }}</span></h1>
+        <img src="" alt="">
+      </div>
+      <!-- Sunset Sunrise -->
+      <div class="sunset_rise">
+        <p>
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 512 512">
+            <g>
+              <g>
+                <path d="m256,105.5c-83.9,0-152.2,68.3-152.2,152.2 0,83.9 68.3,152.2 152.2,152.2 83.9,0 152.2-68.3 152.2-152.2 0-84-68.3-152.2-152.2-152.2zm0,263.5c-61.4,0-111.4-50-111.4-111.4 0-61.4 50-111.4 111.4-111.4 61.4,0 111.4,50 111.4,111.4 0,61.4-50,111.4-111.4,111.4z"/>
+                <path d="m256,74.8c11.3,0 20.4-9.1 20.4-20.4v-23c0-11.3-9.1-20.4-20.4-20.4-11.3,0-20.4,9.1-20.4,20.4v23c2.84217e-14,11.3 9.1,20.4 20.4,20.4z"/>
+                <path d="m256,437.2c-11.3,0-20.4,9.1-20.4,20.4v22.9c0,11.3 9.1,20.4 20.4,20.4 11.3,0 20.4-9.1 20.4-20.4v-22.9c0-11.2-9.1-20.4-20.4-20.4z"/>
+                <path d="m480.6,235.6h-23c-11.3,0-20.4,9.1-20.4,20.4 0,11.3 9.1,20.4 20.4,20.4h23c11.3,0 20.4-9.1 20.4-20.4 0-11.3-9.1-20.4-20.4-20.4z"/>
+                <path d="m54.4,235.6h-23c-11.3,0-20.4,9.1-20.4,20.4 0,11.3 9.1,20.4 20.4,20.4h22.9c11.3,0 20.4-9.1 20.4-20.4 0.1-11.3-9.1-20.4-20.3-20.4z"/>
+                <path d="M400.4,82.8L384.1,99c-8,8-8,20.9,0,28.9s20.9,8,28.9,0l16.2-16.2c8-8,8-20.9,0-28.9S408.3,74.8,400.4,82.8z"/>
+                <path d="m99,384.1l-16.2,16.2c-8,8-8,20.9 0,28.9 8,8 20.9,8 28.9,0l16.2-16.2c8-8 8-20.9 0-28.9s-20.9-7.9-28.9,0z"/>
+                <path d="m413,384.1c-8-8-20.9-8-28.9,0-8,8-8,20.9 0,28.9l16.2,16.2c8,8 20.9,8 28.9,0 8-8 8-20.9 0-28.9l-16.2-16.2z"/>
+                <path d="m99,127.9c8,8 20.9,8 28.9,0 8-8 8-20.9 0-28.9l-16.2-16.2c-8-8-20.9-8-28.9,0-8,8-8,20.9 0,28.9l16.2,16.2z"/>
+              </g>
+            </g>
+          </svg>
+          {{ timeConvert(weather.sys.sunrise) }}
+        </p>
+        <p>
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          viewBox="0 0 512.084 512.084" style="enable-background:new 0 0 512.084 512.084;" xml:space="preserve">
+            <g>
+              <g>
+                <path d="M480.019,287.445c-3.684,2.126-5.274,3.023-7.17,4.016c-107.107,56.169-237.431,10.771-291.324-101.942
+                  c-24.413-51.093-29.531-108.675-15.532-162.776c4.732-18.288-14.886-33.25-31.271-23.847
+                  C12.558,72.999-34.895,231.446,27.428,361.76C91.633,496.062,248.263,550.634,377.05,483.108
+                  c67.074-35.187,115.122-97.774,134.288-171.843C516.076,292.952,496.403,277.988,480.019,287.445z M357.233,445.323
+                  c-107.116,56.164-237.418,10.765-291.312-101.968C20.615,248.624,43.818,136.317,116.21,69.164
+                  c-2.989,47.26,5.921,95.014,26.82,138.755c57.781,120.842,190.417,177.132,310.227,137.988
+                  C432.408,388.322,399.227,423.293,357.233,445.323z"/>
+              </g>
+            </g>
+          </svg>
+          {{ timeConvert(weather.sys.sunset) }}
+        </p>
+      </div>
+      <!-- Coordonées -->
+      <div class="location">
+        <div class="location_title">
+          <h3>
+            Localisation
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+              viewBox="0 0 368.666 368.666" style="enable-background:new 0 0 368.666 368.666;" xml:space="preserve">
+              <g id="XMLID_2_">
+                <g>
+                  <g>
+                    <path d="M184.333,0C102.01,0,35.036,66.974,35.036,149.297c0,33.969,11.132,65.96,32.193,92.515
+                      c27.27,34.383,106.572,116.021,109.934,119.479l7.169,7.375l7.17-7.374c3.364-3.46,82.69-85.116,109.964-119.51
+                      c21.042-26.534,32.164-58.514,32.164-92.485C333.63,66.974,266.656,0,184.333,0z M285.795,229.355
+                      c-21.956,27.687-80.92,89.278-101.462,110.581c-20.54-21.302-79.483-82.875-101.434-110.552
+                      c-18.228-22.984-27.863-50.677-27.863-80.087C55.036,78.002,113.038,20,184.333,20c71.294,0,129.297,58.002,129.296,129.297
+                      C313.629,178.709,304.004,206.393,285.795,229.355z"/>
+                    <path d="M184.333,59.265c-48.73,0-88.374,39.644-88.374,88.374c0,48.73,39.645,88.374,88.374,88.374s88.374-39.645,88.374-88.374
+                      S233.063,59.265,184.333,59.265z M184.333,216.013c-37.702,0-68.374-30.673-68.374-68.374c0-37.702,30.673-68.374,68.374-68.374
+                      s68.373,30.673,68.374,68.374C252.707,185.341,222.035,216.013,184.333,216.013z"/>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </h3>
+          <ul>
+            <li class="latitude">Latitude : {{ weather.coord.lat }}</li>
+            <li class="longitude">Longitude : {{ weather.coord.lon }}</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Météo -->
+      <div class="main_weather">
+        <div class="weather_title">
+          <h3>
+            Météo actuelle
+            <svg width="48px" height="48px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M23.9989 6C30.336 6 33.9309 10.1946 34.4537 15.2603L34.6136 15.2602C38.6918 15.2602 41.9978 18.5577 41.9978 22.6253C41.9978 26.6929 38.6918 29.9904 34.6136 29.9904L32.8907 29.9912L32.8874 30H32.3013L30.3297 33.3798C29.9819 33.9761 29.2165 34.1776 28.6202 33.8297C28.0238 33.4819 27.8224 32.7165 28.1703 32.1201L29.4129 29.99L25.1543 29.9912L25.1506 30H24.3013L22.3297 33.3798C21.9819 33.9761 21.2165 34.1776 20.6202 33.8297C20.0238 33.4819 19.8224 32.7165 20.1703 32.1201L21.4128 29.9901L17.4179 29.9912L17.4145 30H16.3015L14.3299 33.3798C13.9821 33.9761 13.2167 34.1775 12.6204 33.8297C12.024 33.4818 11.8226 32.7164 12.1705 32.1201L13.4128 29.9903L13.3842 29.9904C9.306 29.9904 6 26.6929 6 22.6253C6 18.5577 9.306 15.2602 13.3842 15.2602L13.5441 15.2603C14.07 10.1613 17.6618 6 23.9989 6ZM23.9989 8.49518C19.7378 8.49518 16.0239 11.9431 16.0239 16.7058C16.0239 17.4604 15.3677 18.0525 14.6164 18.0525L13.1958 18.0525C10.6018 18.0525 8.49886 20.1663 8.49886 22.7738C8.49886 25.3814 10.6018 27.4952 13.1958 27.4952H34.8019C37.396 27.4952 39.4989 25.3814 39.4989 22.7738C39.4989 20.1663 37.396 18.0525 34.802 18.0525L33.3814 18.0525C32.6301 18.0525 31.9739 17.4604 31.9739 16.7058C31.9739 11.882 28.2599 8.49518 23.9989 8.49518Z" fill="#212121"/>
+              <path d="M17.6299 34.6703C18.2262 35.0181 18.4276 35.7835 18.0797 36.3798L16.3297 39.3798C15.9819 39.9762 15.2165 40.1776 14.6202 39.8297C14.0239 39.4819 13.8224 38.7165 14.1703 38.1202L15.9203 35.1202C16.2681 34.5238 17.0335 34.3224 17.6299 34.6703Z" fill="#212121"/>
+              <path d="M26.0797 36.3798C26.4276 35.7835 26.2262 35.0181 25.6299 34.6703C25.0335 34.3224 24.2681 34.5238 23.9203 35.1202L22.1703 38.1202C21.8224 38.7165 22.0239 39.4819 22.6202 39.8297C23.2165 40.1776 23.9819 39.9762 24.3297 39.3798L26.0797 36.3798Z" fill="#212121"/>
+            </svg>
+          </h3>
+        </div>
+        <!-- weather info -->
+        <div class="weather_content">
+          <div class="temp">
+            <h1>{{ Math.round(weather.main.temp) }}°<span>c</span></h1>
+            <p>{{ weather.weather[0].description }}</p>
+          </div>
+          <div class="info">
+            <ul>
+              <li>
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                <g>
+                  <g>
+                    <path d="M287.64,94.921c-31.721,0-57.528,25.807-57.528,57.528h34.517c0-12.688,10.323-23.011,23.011-23.011
+                      c12.688,0,23.011,10.323,23.011,23.011c0,12.688-10.323,23.011-23.011,23.011H46.022v34.517H287.64
+                      c31.721,0,57.528-25.807,57.528-57.528C345.169,120.728,319.361,94.921,287.64,94.921z"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path d="M431.461,106.427c-34.893,0-63.281,28.388-63.281,63.281c0,25.377,20.646,46.022,46.022,46.022
+                      c25.377,0,46.022-20.646,46.022-46.022h-34.517c0,6.344-5.161,11.506-11.506,11.506c-6.344,0-11.506-5.161-11.506-11.506
+                      c0-15.861,12.904-28.764,28.764-28.764c25.377,0,46.022,20.646,46.022,46.022c0,25.377-20.646,46.022-46.022,46.022H0v34.517
+                      h431.461c44.409,0,80.539-36.13,80.539-80.539C512,142.557,475.87,106.427,431.461,106.427z"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path d="M345.169,290.517H46.022v34.517h299.146c15.861,0,28.764,12.904,28.764,28.764c0,15.861-12.904,28.764-28.764,28.764
+                      c-15.86,0-28.764-12.904-28.764-28.764h-34.517c0,34.893,28.388,63.281,63.281,63.281c34.893,0,63.281-28.388,63.281-63.281
+                      C408.449,318.905,380.062,290.517,345.169,290.517z"/>
+                  </g>
+                </g>
+                </svg>
+                {{ weather.wind.speed }} m/s
+              </li>
+              <li>
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                <g>
+                  <g>
+                    <path d="M256,0C114.51,0,0,114.497,0,256c0,141.491,114.497,256,256,256c141.49,0,256-114.497,256-256
+                      C512,114.509,397.503,0,256,0z M256,478.609c-122.746,0-222.609-99.862-222.609-222.609S133.254,33.391,256,33.391
+                      S478.609,133.254,478.609,256S378.746,478.609,256,478.609z"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path d="M256,66.783C151.29,66.783,66.783,151.738,66.783,256c0,48.619,18.872,97.248,55.421,133.797
+                      c6.52,6.52,17.091,6.52,23.611,0l23.611-23.611c6.52-6.519,6.52-17.09,0-23.611c-6.519-6.52-17.09-6.52-23.611,0l-11.177,11.177
+                      c-19.241-23.851-30.408-52.1-33.501-81.056h15.734c9.22,0,16.696-7.475,16.696-16.696c0-9.22-7.475-16.696-16.696-16.696h-15.725
+                      c3.094-28.955,14.261-57.198,33.5-81.05l11.17,11.169c6.52,6.52,17.091,6.52,23.611,0c6.519-6.519,6.519-17.091,0-23.611
+                      l-11.175-11.175c23.276-18.804,51.227-30.356,81.054-33.5v15.732c0,9.22,7.475,16.696,16.696,16.696
+                      c9.22,0,16.696-7.475,16.696-16.696v-15.731c29.827,3.144,57.777,14.698,81.054,33.5l-72.032,72.032
+                      c-7.699-4.03-16.444-6.323-25.719-6.323c-30.687,0-55.652,24.966-55.652,55.652c0,30.687,24.966,55.652,55.652,55.652
+                      c30.687,0,55.652-24.966,55.652-55.652c0-9.275-2.293-18.02-6.323-25.718l72.026-72.026c19.239,23.85,30.406,52.094,33.5,81.05
+                      H395.13c-9.22,0-16.696,7.475-16.696,16.696c0,9.22,7.475,16.696,16.696,16.696h15.734c-3.093,28.956-14.26,57.206-33.501,81.056
+                      l-11.177-11.177c-6.519-6.519-17.091-6.519-23.611,0c-6.52,6.52-6.52,17.091,0,23.611l23.611,23.611
+                      c6.52,6.52,17.091,6.52,23.611,0c36.482-36.483,55.421-85.084,55.421-133.798C445.217,151.681,360.676,66.783,256,66.783z
+                      M256,278.261c-12.275,0-22.261-9.986-22.261-22.261c0-12.275,9.986-22.261,22.261-22.261c12.275,0,22.261,9.986,22.261,22.261
+                      C278.261,268.275,268.275,278.261,256,278.261z"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path d="M272.696,345.043h-33.391c-27.618,0-50.087,22.469-50.087,50.087s22.469,50.087,50.087,50.087h33.391
+                      c27.618,0,50.087-22.469,50.087-50.087S300.314,345.043,272.696,345.043z M272.696,411.826h-33.391
+                      c-9.206,0-16.696-7.49-16.696-16.696s7.49-16.696,16.696-16.696h33.391c9.206,0,16.696,7.49,16.696,16.696
+                      S281.902,411.826,272.696,411.826z"/>
+                  </g>
+                </g>
+                </svg>
+                {{ weather.main.pressure }} hPa
+              </li>
+              <li>
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                <g>
+                  <g>
+                    <path d="M302.296,221.673L182.04,101.417L61.784,221.673c-66.31,66.31-66.31,174.203,0,240.513
+                      C93.904,494.308,136.612,512,182.04,512s88.135-17.692,120.256-49.814C368.606,395.876,368.606,287.983,302.296,221.673z
+                      M270.926,430.815c-23.743,23.742-55.311,36.818-88.887,36.818c-33.576,0-65.142-13.075-88.885-36.818
+                      c-49.012-49.012-49.012-128.759,0-177.772l88.885-88.885l88.887,88.885C319.938,302.056,319.938,381.803,270.926,430.815z"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path d="M471.84,67.971L403.869,0l-67.971,67.971c-37.48,37.48-37.48,98.462,0,135.942c18.153,18.154,42.292,28.153,67.968,28.156
+                      c0.003,0,0.006,0,0.009,0c25.67,0,49.809-10,67.965-28.156C509.319,166.433,509.319,105.451,471.84,67.971z M440.469,172.542
+                      c-9.777,9.777-22.771,15.161-36.594,15.161h-0.004c-13.827-0.001-26.826-5.386-36.602-15.161c-20.18-20.18-20.18-53.02,0-73.2
+                      l36.6-36.6l36.6,36.6C460.648,119.522,460.648,152.362,440.469,172.542z"/>
+                  </g>
+                </g>
+                </svg>
+                {{ weather.main.humidity }} %
               </li>
             </ul>
           </div>
@@ -200,7 +398,81 @@
 export default {
   data () {
     return {
-      seen: false
+      always: true,
+      seen2: false,
+      seen: false,
+      load: true,
+      found: false,
+      api_key: '4904538d41bfc39b8c10759f5776286c',
+      base_url: 'https://api.openweathermap.org/data/2.5/',
+      query: '',
+      weather: {}
+    }
+  },
+  mounted () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        fetch(`${this.base_url}weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&lang=fr&appid=${this.api_key}`)
+          .then(res => {
+            return res.json()
+          })
+          .then((results) => {
+            this.weather = results
+            this.load = false
+            this.seen = true
+          })
+    })
+    } else {
+      console.log("not geolocation")
+    }
+  },
+  methods: {
+    fetchWeather (e) {
+      this.load = true
+      this.found = false
+      this.seen = false
+      this.seen2 = false
+      if (e.key == 'Enter') {
+        fetch(`${this.base_url}weather?q=${this.query}&units=metric&lang=fr&APPID=${this.api_key}`)
+         .then(res => {
+           return res.json()
+         })
+         .then(this.setResults)
+      }
+    },
+    setResults (results) {
+      if (results.cod == '404') {
+        this.found = true
+        this.load = false
+      } else {
+        this.weather = results
+        this.load = false
+        this.found = false
+        this.seen = false
+        this.seen2 = true
+      }
+    },
+    timeConvert (unix) {
+      let a = new Date(unix * 1000)
+      let hours = a.getHours()
+      let minutes = a.getMinutes()
+      return `${hours}h${minutes}`
+    },
+    dateBuilder () {
+      let d = new Date()
+      let months = ["Janvier", "Février", "Mars", "Avril",
+      "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre",
+      "Novembre", "Décembre"]
+
+      let days = ["Dimanche", "Lundi", "Mardi", "Mercredi",
+      "Jeudi", "Vendredi", "Samedi"]
+
+      let day = days[d.getDay()]
+      let date = d.getDate()
+      let month = months[d.getMonth()]
+      let year = d.getFullYear()
+
+      return `${day} ${date} ${month} ${year}`
     }
   }
 }
@@ -213,6 +485,32 @@ export default {
   margin: 50px auto;
 }
 
+.loader {
+  width: 100%;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader img {
+  width: 120px;
+  height: 120px;
+}
+
+.error {
+  width: 100%;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.error h1 {
+  font-size: 21px;
+}
+
 .search_box {
   text-align: center;
 }
@@ -222,6 +520,7 @@ export default {
   outline: none;
   width: 75%;
   height: 50px;
+  font-size: 21px;
   text-align: center;
   border: none;
   border-radius: 10px;
@@ -359,6 +658,10 @@ export default {
   font-size: 40px;
 }
 
+.weather .main_weather .weather_content .temp p {
+  text-transform: capitalize;
+}
+
 .weather .main_weather .weather_content svg {
   width: 19px;
   height: 19px;
@@ -441,6 +744,28 @@ export default {
   .search_box input {
     height: 60px;
     width: 550px;
+  }
+
+  .weather .city_name h1 {
+    font-size: 60px;
+  }
+
+  .weather .date {
+    width: 600px;
+    margin: 50px auto;
+  }
+
+  .weather .sunset_rise {
+    width: 650px;
+    margin: 40px auto;
+  }
+
+  .weather .main_weather .weather_content .temp h1 {
+    font-size: 76px;
+  }
+
+  .weather .weather_content .info ul li {
+    margin: 10px 15px;
   }
 }
 </style>
