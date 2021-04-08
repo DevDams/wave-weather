@@ -56,13 +56,20 @@
           <h3>
             Localisation
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-            viewBox="0 0 460.047 460.047" style="enable-background:new 0 0 460.047 460.047;" xml:space="preserve">
-              <g>
+              viewBox="0 0 368.666 368.666" style="enable-background:new 0 0 368.666 368.666;" xml:space="preserve">
+              <g id="XMLID_2_">
                 <g>
-                  <path d="M439.616,1.029L9.615,166.405c-5.625,2.163-9.409,7.482-9.607,13.505c-0.199,6.023,3.225,11.58,8.694,14.11l175.93,81.379
-                    l81.379,175.93c2.46,5.318,7.782,8.703,13.612,8.703c0.165,0,0.332-0.002,0.498-0.008c6.023-0.199,11.342-3.983,13.505-9.607
-                    c0.755-1.963,164.899-428.76,165.398-430.069C463.713,7.965,451.423-3.511,439.616,1.029z M53.478,181.677L384.415,54.402
-                    L192.728,246.089L53.478,181.677z M278.353,406.552l-64.412-139.25L405.629,75.614L278.353,406.552z"/>
+                  <g>
+                    <path d="M184.333,0C102.01,0,35.036,66.974,35.036,149.297c0,33.969,11.132,65.96,32.193,92.515
+                      c27.27,34.383,106.572,116.021,109.934,119.479l7.169,7.375l7.17-7.374c3.364-3.46,82.69-85.116,109.964-119.51
+                      c21.042-26.534,32.164-58.514,32.164-92.485C333.63,66.974,266.656,0,184.333,0z M285.795,229.355
+                      c-21.956,27.687-80.92,89.278-101.462,110.581c-20.54-21.302-79.483-82.875-101.434-110.552
+                      c-18.228-22.984-27.863-50.677-27.863-80.087C55.036,78.002,113.038,20,184.333,20c71.294,0,129.297,58.002,129.296,129.297
+                      C313.629,178.709,304.004,206.393,285.795,229.355z"/>
+                    <path d="M184.333,59.265c-48.73,0-88.374,39.644-88.374,88.374c0,48.73,39.645,88.374,88.374,88.374s88.374-39.645,88.374-88.374
+                      S233.063,59.265,184.333,59.265z M184.333,216.013c-37.702,0-68.374-30.673-68.374-68.374c0-37.702,30.673-68.374,68.374-68.374
+                      s68.373,30.673,68.374,68.374C252.707,185.341,222.035,216.013,184.333,216.013z"/>
+                  </g>
                 </g>
               </g>
             </svg>
@@ -211,13 +218,15 @@ export default {
 }
 
 .search_box input {
+  font-family: 'Bebas Neue', cursive;
   outline: none;
   width: 75%;
-  height: 45px;
+  height: 50px;
   text-align: center;
   border: none;
   border-radius: 10px;
-  box-shadow: 0px 5px 12px -9px black;
+  box-shadow:  5px 5px 22px #c4cfcd,
+             -5px -5px 22px #ffffff;
 }
 
 .weather .date {
@@ -232,6 +241,11 @@ export default {
   text-align: center;
   margin-top: 30px;
   color: #f14666;
+  font-family: 'Bebas Neue', cursive;
+}
+
+.weather .city_name h1 {
+  font-size: 50px;
 }
 
 /* Sunset Sunrise */
@@ -255,11 +269,12 @@ export default {
 
 /* Location */
 .weather .location {
-  border: 1px solid black;
   border-radius: 5px;
   margin-top: 30px;
-  padding: 10px;
-  box-shadow: 0px 5px 12px -9px black;
+  padding: 20px 10px;
+  background: linear-gradient(145deg, #f6ffff, #cfdcd9);
+  box-shadow:  10px 10px 32px #c4cfcd,
+             -10px -10px 32px #ffffff;
 }
 
 .weather .location .location_title svg {
@@ -268,11 +283,16 @@ export default {
   margin: 0 10px;
 }
 
+.weather .location .location_title svg path {
+  fill: #4B856C;
+}
+
 .weather .location .location_title h3 {
   display: flex;
   align-items: center;
   text-transform: uppercase;
-  color: #19524D;
+  color: #4B856C;
+  font-weight: 900;
 }
 
 .weather .location ul {
@@ -289,11 +309,12 @@ export default {
 
 /* Météo */
 .weather .main_weather {
-  border: 1px solid black;
   border-radius: 5px;
   margin-top: 60px;
-  padding: 10px;
-  box-shadow: 0px 5px 12px -9px black;
+  padding: 20px 15px;
+  background: linear-gradient(145deg, #f6ffff, #cfdcd9);
+  box-shadow:  10px 10px 32px #c4cfcd,
+             -10px -10px 32px #ffffff;
   margin-bottom: 80px;
 }
 
@@ -301,7 +322,8 @@ export default {
   display: flex;
   align-items: center;
   text-transform: uppercase;
-  color: #19524D;
+  color: #4B856C;
+  font-weight: 900;
 }
 
 .weather .main_weather .weather_title svg {
@@ -309,6 +331,10 @@ export default {
   width: 32px;
   height: 32px;
   margin-left: 8px;
+}
+
+.weather .main_weather .weather_title svg path {
+  fill: #4B856C;
 }
 
 .weather .main_weather .weather_content {
@@ -334,8 +360,8 @@ export default {
 }
 
 .weather .main_weather .weather_content svg {
-  width: 21px;
-  height: 21px;
+  width: 19px;
+  height: 19px;
 }
 
 .weather .main_weather .weather_content .info {
@@ -348,10 +374,73 @@ export default {
 }
 
 .weather .main_weather .weather_content .info ul li {
-  padding: 5px 0;
+  padding: 7px 0;
+  font-weight: 600;
 }
 
 .weather .main_weather .weather_content .info ul li svg {
   margin-right: 7px;
+}
+
+.weather .main_weather .weather_content .info ul li svg path {
+  fill: #6B7A9B;
+}
+
+@media (min-width: 425px) {
+  .weather .location ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+  }
+}
+
+@media (min-width: 495px) {
+  .weather .weather_content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .weather .weather_content .info ul {
+    display: flex;
+  }
+
+  .weather .weather_content .info ul li {
+    margin: 0 15px;
+  }
+}
+
+@media (min-width: 545px) {
+  .weather .location .location_title h3 {
+    margin-left: 50px;
+  }
+  .weather .location ul {
+    width: 400px;
+    margin: auto;
+  }
+}
+
+@media (min-width: 675px) {
+  .weather .location {
+    width: 500px;
+    margin: 60px auto;
+  }
+
+  .weather .main_weather {
+    width: 600px;
+    margin: 30px auto;
+  }
+
+  .weather .main_weather .weather_title h3 {
+    margin-left: 50px;
+  }
+}
+
+@media (min-width: 767px) {
+  .search_box input {
+    height: 60px;
+    width: 550px;
+  }
 }
 </style>

@@ -29,7 +29,7 @@ export default {
 
 body {
   font-family: 'Raleway', sans-serif;
-  background-color: #ffcdaa;
+  background-color: #e6f4f1;
 }
 
 #app {
